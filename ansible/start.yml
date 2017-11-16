@@ -5,6 +5,10 @@
 
 - hosts: scion_nodes
   tasks:
+    - name: Start supervisord
+      command: /home/scion/.local/bin/supervisord -c supervisor/supervisord.conf
+               creates=/tmp/supervisor.sock
+               chdir={{repo_loc}}
     - name: Start SCION processes
       command: /home/scion/.local/bin/supervisorctl -c supervisor/supervisord.conf start all
                chdir={{repo_loc}}
