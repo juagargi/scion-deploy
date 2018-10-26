@@ -79,6 +79,10 @@
                chdir={{repo_loc}}
     - name: Make sure the code is built and installed
       shell: bash --login -c "make -s clean all" chdir={{repo_loc}}
+    - name: Do not remove shm files at logout
+      shell: bash --login -c 'echo RemoveIPC=no >> /etc/systemd/logind.conf'
+      become: true
+      become_user: root
     - name: Start SCION processes
       command: /home/scion/.local/bin/supervisorctl -c supervisor/supervisord.conf start all
                chdir={{repo_loc}}
