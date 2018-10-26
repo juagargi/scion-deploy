@@ -1,6 +1,6 @@
 - hosts: zookeepers
   vars:
-    repo_loc: /home/scion/go/src/github.com/netsec-ethz/scion
+    repo_loc: /home/scion/go/src/github.com/scionproto/scion
   tasks:
     - name: Delete Zookeeper State
       command: tools/zkcleanslate

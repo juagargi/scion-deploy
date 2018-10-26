@@ -1,0 +1,17 @@
+---
+- name: Copy the basics of the gen directory
+  copy: src={{local_gen}}/dispatcher dest={{repo_loc}}/gens/{{ts}}/
+  remote_user: scion
+- name: Copy the overlay configuration file
+  copy: src={{local_gen}}/overlay dest={{repo_loc}}/gens/{{ts}}/
+  remote_user: scion
+- name: Copy the endhost folder
+  copy: src={{local_gen}}/ISD{{isd}}/AS{{as}}/endhost dest={{repo_loc}}/gens/{{ts}}/ISD{{isd}}/AS{{as}}/
+  remote_user: scion
+- name: Copy the endhost supervisord configuration file
+  copy: src={{local_gen}}/ISD{{isd}}/AS{{as}}/supervisord.conf dest={{repo_loc}}/gens/{{ts}}/ISD{{isd}}/AS{{as}}/
+  remote_user: scion
+- name: Initialize the program list in supervisord configuration file
+  lineinfile: dest={{repo_loc}}/gens/{{ts}}/{{cfg_loc}}/supervisord.conf
+              regexp='^programs'
+              line='programs = sd{{isd}}-{{as}}'

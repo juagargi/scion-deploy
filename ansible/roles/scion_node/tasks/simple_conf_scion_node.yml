@@ -15,13 +15,17 @@
   - name: Make sure PATH exists in .profile
     lineinfile: dest=/home/scion/.profile
                 line="export PATH=\"/home/scion/.local/bin:/usr/local/go/bin:$GOPATH/bin:$PATH\""
+  - name: Make sure alias for old SCION path does not exist in .profile
+    lineinfile: dest=/home/scion/.profile
+              line="alias cdscion='cd ~/go/src/github.com/netsec-ethz/scion'"
+              state=absent
   - name: Make sure alias for SCION folder exists .profile
     lineinfile: dest=/home/scion/.profile
-                line="alias cdscion='cd ~/go/src/github.com/netsec-ethz/scion'"
+                line="alias cdscion='cd ~/go/src/github.com/scionproto/scion'"
   - name: Make sure scion repo folder exists
     file: path={{repo_loc}} state=directory
   - name: Checkout SCION codebase
-    git: repo=https://github.com/netsec-ethz/scion.git
+    git: repo=https://github.com/scionproto/scion.git
          dest={{repo_loc}}
          version={{scion_version}}
          recursive=yes

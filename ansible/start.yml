@@ -1,7 +1,7 @@
 - hosts: scion_nodes
   tasks:
   - set_fact:
-      repo_loc: /home/scion/go/src/github.com/netsec-ethz/scion
+      repo_loc: /home/scion/go/src/github.com/scionproto/scion
 
 - hosts: scion_nodes
   tasks:

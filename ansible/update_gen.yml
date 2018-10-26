@@ -1,23 +1,4 @@
 ---
-- hosts: switch_engines
-  roles:
-    - basic
-  remote_user: ubuntu
-  become: true
-
-- hosts: amazon_ec2
-  roles:
-    - basic
-  remote_user: ubuntu
-  become: true
-
-- hosts: all
-  roles:
-    - basic
-    - apt
-    - ntp
-  become: true
-
 - hosts: scion_nodes
   tasks:
   - set_fact:
@@ -27,7 +8,7 @@
 
 - hosts: scion_nodes
   roles:
-    - scion_node
+    - copy_gen
 
 - hosts: beacon_servers
   roles:
@@ -77,8 +58,6 @@
       command: /home/scion/.local/bin/supervisord -c supervisor/supervisord.conf
                creates=/tmp/supervisor.sock
                chdir={{repo_loc}}
-    - name: Make sure the code is built and installed
-      shell: bash --login -c "make -s clean all" chdir={{repo_loc}}
     - name: Start SCION processes
       command: /home/scion/.local/bin/supervisorctl -c supervisor/supervisord.conf start all
                chdir={{repo_loc}}

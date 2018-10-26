@@ -18,19 +18,39 @@
   lineinfile: dest=/home/scion/.profile
               line="export PATH=\"/home/scion/.local/bin:/usr/local/go/bin:$GOPATH/bin:$PATH\""
   remote_user: scion
-- name: Make sure alias for SCION folder exists .profile
+- name: Make sure SC for old SCION path does not exist in .profile
+  lineinfile: dest=/home/scion/.profile
+              line="export SC=\"$GOPATH/src/github.com/netsec-ethz/scion\""
+              state=absent
+- name: Make sure SC exists in .profile
+  lineinfile: dest=/home/scion/.profile
+              line="export SC=\"$GOPATH/src/github.com/scionproto/scion\""
+  remote_user: scion
+- name: Make sure PYTHONPATH exists in .profile
+  lineinfile: dest=/home/scion/.profile
+              line="export PYTHONPATH=\"$SC/python:$SC\""
+  remote_user: scion
+- name: Make sure alias for old SCION path does not exist in .profile
   lineinfile: dest=/home/scion/.profile
               line="alias cdscion='cd ~/go/src/github.com/netsec-ethz/scion'"
+              state=absent
+- name: Make sure alias for SCION folder exists .profile
+  lineinfile: dest=/home/scion/.profile
+              line="alias cdscion='cd ~/go/src/github.com/scionproto/scion'"
   remote_user: scion
+- name: Make sure old scion repo folder does not exist
+  file: path=/home/scion/go/src/github.com/netsec-ethz/scion
+        state=absent
 - name: Make sure scion repo folder exists
   file: path={{repo_loc}} state=directory
   remote_user: scion
 - name: Checkout SCION codebase
-  git: repo=git@github.com:netsec-ethz/scion.git
+  git: repo=git@github.com:netsec-ethz/netsec-scion.git
        dest={{repo_loc}}
        key_file=~/.ssh/deploy.scion
        version={{scion_version}}
        accept_hostkey=yes
+       force=yes
   remote_user: scion
 - name: Install all dependencies
   shell: bash --login -c "APTARGS=-y GO_INSTALL=y ./env/deps" chdir={{repo_loc}}
@@ -42,4 +62,14 @@
   remote_user: scion
 - name: Copy the endhost folder
   copy: src={{local_gen}}/ISD{{isd}}/AS{{as}}/endhost dest={{repo_loc}}/gens/{{ts}}/ISD{{isd}}/AS{{as}}/
+  remote_user: scion
+- name: Copy the endhost supervisord configuration file
+  copy: src={{local_gen}}/ISD{{isd}}/AS{{as}}/supervisord.conf dest={{repo_loc}}/gens/{{ts}}/ISD{{isd}}/AS{{as}}/
+  remote_user: scion
+- name: Initialize the program list in supervisord configuration file
+  lineinfile: dest={{repo_loc}}/gens/{{ts}}/{{cfg_loc}}/supervisord.conf
+              regexp='^programs'
+              line='programs = sd{{isd}}-{{as}}'
+- name: Copy the overlay configuration file
+  copy: src={{local_gen}}/overlay dest={{repo_loc}}/gens/{{ts}}/
   remote_user: scion
